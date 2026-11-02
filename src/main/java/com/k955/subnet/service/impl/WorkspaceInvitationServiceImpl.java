@@ -107,7 +107,7 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
         String tokenHash = invitationTokenUtil.hashToken(workspaceInvitationAcceptRequest.token());
 
         WorkspaceInvitation workspaceInvitation = workspaceInvitationRepository
-                .findByInviteTokenHash(workspaceInvitationAcceptRequest.token())
+                .findByInviteTokenHash(tokenHash)
                 .orElseThrow(() -> new BadRequestException(
                         ErrorCode.INVALID_INVITATION,
                         "This invitation is invalid or no longer available."
@@ -120,7 +120,7 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
             );
         }
 
-        if(workspaceInvitation.getExpiresAt().isAfter(Instant.now())) {
+        if(workspaceInvitation.getExpiresAt().isBefore(Instant.now())) {
             throw new BadRequestException(ErrorCode.INVITATION_EXPIRED, "This invitation has expired.");
         }
 
@@ -136,6 +136,18 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
         if(alreadyMember) {
             throw new BadRequestException(ErrorCode.BAD_REQUEST, "You are already a member of this Workspace");
         }
+
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCode.WORKSPACE_NOT_FOUND, "The Workspace Details can't be loaded at the moment. Try Later!"
+                ));
+
+        WorkspaceMember workspaceMember = WorkspaceMember.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(workspaceInvitation.getRole())
+                .build();
+        workspaceMemberRepository.save(workspaceMember);
 
         workspaceInvitation.setStatus(WorkspaceInvitationStatus.ACCEPTED);
         workspaceInvitation.setAcceptedAt(Instant.now());

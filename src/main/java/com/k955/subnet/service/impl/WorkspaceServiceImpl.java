@@ -16,6 +16,7 @@ import com.k955.subnet.repository.WorkspaceMemberRepository;
 import com.k955.subnet.repository.WorkspaceRepository;
 import com.k955.subnet.security.JwtAuthUtil;
 import com.k955.subnet.service.WorkspaceService;
+import com.k955.subnet.specification.WorkspaceSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -79,8 +80,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<WorkspaceResponse> getUserWorkspaces(String slug, String search, Pageable pageable) {
-        return null;
+        return workspaceRepository
+                .findAll(WorkspaceSpecification.filterBy(slug, search), pageable)
+                .map(workspaceMapper::toWorkspaceResponse);
     }
 
     @Override
