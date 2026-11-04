@@ -3,6 +3,8 @@ package com.k955.subnet.repository;
 import com.k955.subnet.entity.WorkspaceMember;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +17,7 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     Optional<WorkspaceMember> findByWorkspaceIdAndUserId(UUID workspaceId, UUID userId);
 
     boolean existsByWorkspaceIdAndUserEmail(UUID workspaceId, @NotBlank @Email String email);
+
+    Page<WorkspaceMember> findAllByWorkspaceId(UUID workspaceId, Pageable pageable);
 
 }
