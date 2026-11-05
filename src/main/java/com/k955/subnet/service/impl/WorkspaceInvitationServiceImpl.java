@@ -160,7 +160,7 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
         String tokenHash = invitationTokenUtil.hashToken(workspaceInvitationRejectRequest.token());
 
         WorkspaceInvitation workspaceInvitation = workspaceInvitationRepository
-                .findByInviteTokenHash(workspaceInvitationRejectRequest.token())
+                .findByInviteTokenHash(tokenHash)
                 .orElseThrow(() -> new BadRequestException(
                         ErrorCode.INVALID_INVITATION,
                         "This invitation is invalid or no longer available."

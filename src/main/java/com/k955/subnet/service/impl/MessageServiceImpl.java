@@ -64,6 +64,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<MessageResponse> getChannelMessages(UUID channelId, Pageable pageable) {
         UUID userId = jwtAuthUtil.getCurrentUserId();
 

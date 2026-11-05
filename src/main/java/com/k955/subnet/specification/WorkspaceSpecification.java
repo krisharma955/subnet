@@ -23,7 +23,7 @@ public class WorkspaceSpecification {
                 String pattern = "%" + search.toLowerCase() + "%";
                 predicates.add(
                         cb.or(
-                                cb.like(cb.lower(root.get("title")), pattern),
+                                cb.like(cb.lower(root.get("name")), pattern),
                                 cb.like(cb.lower(root.get("description")), pattern)
                         )
                 );
