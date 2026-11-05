@@ -20,4 +20,6 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
 
     Page<WorkspaceMember> findAllByWorkspaceId(UUID workspaceId, Pageable pageable);
 
+    boolean existsByWorkspaceIdAndUserId(UUID id, UUID userId);
+
 }

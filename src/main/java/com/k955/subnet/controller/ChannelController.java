@@ -6,6 +6,10 @@ import com.k955.subnet.dtos.Channel.UpdateChannelRequest;
 import com.k955.subnet.service.ChannelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +45,20 @@ public class ChannelController {
     @DeleteMapping("/channels/{channelId}")
     public ResponseEntity<Void> deleteChannel(@PathVariable UUID channelId) {
         channelService.deleteChannel(channelId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{workspaceId}/channels")
+    public ResponseEntity<Page<ChannelResponse>> getDiscoverableChannels(
+            @PathVariable UUID workspaceId,
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(channelService.getDiscoverableChannels(workspaceId, pageable));
+    }
+
+    @DeleteMapping("/channels/{channelId}/leave")
+    public ResponseEntity<Void> leaveChannel(@PathVariable UUID channelId) {
+        channelService.leaveChannel(channelId);
         return ResponseEntity.noContent().build();
     }
 
