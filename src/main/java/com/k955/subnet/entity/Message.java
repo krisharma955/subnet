@@ -32,6 +32,10 @@ public class Message {
     @Column(nullable = false, columnDefinition = "TEXT")
     String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_message_id")
+    Message parentMessage;
+
     @Column(nullable = false, updatable = false)
     Instant createdAt;
 

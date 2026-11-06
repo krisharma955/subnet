@@ -14,4 +14,6 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     Page<Message> findAllByChannelId(UUID channelId, Pageable pageable);
 
+    Page<Message> findAllByParentMessageId(UUID parentMessageId, Pageable pageable);
+
 }

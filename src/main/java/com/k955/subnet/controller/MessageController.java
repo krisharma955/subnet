@@ -56,4 +56,21 @@ public class MessageController {
         return ResponseEntity.noContent().build();
     }
 
+    /// Threaded Messages
+
+    @PostMapping("/channels/messages/{messageId}/replies")
+    public ResponseEntity<MessageResponse> replyToMessage(
+            @PathVariable UUID messageId, @Valid @RequestBody MessageRequest messageRequest
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(messageService.replyToMessage(messageId, messageRequest));
+    }
+
+    @GetMapping("/channels/messages/{messageId}/replies")
+    public ResponseEntity<Page<MessageResponse>> getReplies(
+            @PathVariable UUID messageId,
+            @PageableDefault(size = 20, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(messageService.getReplies(messageId, pageable));
+    }
+
 }
