@@ -153,7 +153,7 @@ public class MessageServiceImpl implements MessageService {
 
         boolean isChannelMember = channelMemberRepository
                 .existsByChannelIdAndUserId(message.getChannel().getId(), userId);
-        if(isChannelMember) {
+        if(!isChannelMember) {
             throw new BadRequestException(ErrorCode.BAD_REQUEST, "Only Channel Members can access the chat");
         }
 
@@ -196,7 +196,7 @@ public class MessageServiceImpl implements MessageService {
 
         boolean isChannelMember = channelMemberRepository
                 .existsByChannelIdAndUserId(message.getChannel().getId(), userId);
-        if(isChannelMember) {
+        if(!isChannelMember) {
             throw new BadRequestException(ErrorCode.BAD_REQUEST, "Only Channel Members can access the chat");
         }
 
@@ -287,10 +287,9 @@ public class MessageServiceImpl implements MessageService {
             throw new BadRequestException(ErrorCode.FORBIDDEN, "Only Channel Members can access the chat");
         }
 
-        return messageReactionRepository.findAllByMessageId(messageId)
-                .stream()
-                .map(messageReactionMapper::toMessageReactionResponse)
-                .toList();
+        return messageReactionMapper.toListOfMessageReactionResponse(
+                messageReactionRepository.findAllByMessageId(messageId)
+        );
     }
 
 }

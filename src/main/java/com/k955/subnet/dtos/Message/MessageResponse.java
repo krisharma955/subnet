@@ -11,6 +11,7 @@ public record MessageResponse(
         ChannelResponse channel,
         UserProfileResponse sender,
         String content,
+        ParentMessageResponse parentMessage,
         Instant createdAt,
         Instant updatedAt
 ) {
