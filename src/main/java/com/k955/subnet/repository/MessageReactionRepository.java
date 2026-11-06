@@ -15,4 +15,6 @@ public interface MessageReactionRepository extends JpaRepository<MessageReaction
 
     List<MessageReaction> findAllByMessageId(UUID messageId);
 
+    boolean existsByMessageIdAndUserId(UUID messageId, UUID userId);
+
 }

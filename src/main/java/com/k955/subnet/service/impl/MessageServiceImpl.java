@@ -216,8 +216,20 @@ public class MessageServiceImpl implements MessageService {
 
         boolean isChannelMember = channelMemberRepository
                 .existsByChannelIdAndUserId(message.getChannel().getId(), userId);
-        if(isChannelMember) {
+        if(!isChannelMember) {
             throw new BadRequestException(ErrorCode.FORBIDDEN, "Only Channel Members can access the chat");
+        }
+
+        boolean exists = messageReactionRepository.existsByMessageIdAndUserId(messageId, userId);
+        if(exists) {
+            MessageReaction messageReaction = messageReactionRepository.findByMessageIdAndUserId(messageId, userId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            ErrorCode.MESSAGE_REACTION_NOT_FOUND, "No Message Reaction found!"
+                    ));
+
+            messageReaction.setEmoji(messageReactionRequest.emoji());
+            messageReactionRepository.save(messageReaction);
+            return messageReactionMapper.toMessageReactionResponse(messageReaction);
         }
 
         User user = userRepository.findById(userId)
@@ -247,7 +259,7 @@ public class MessageServiceImpl implements MessageService {
 
         boolean isChannelMember = channelMemberRepository
                 .existsByChannelIdAndUserId(message.getChannel().getId(), userId);
-        if(isChannelMember) {
+        if(!isChannelMember) {
             throw new BadRequestException(ErrorCode.FORBIDDEN, "Only Channel Members can access the chat");
         }
 
@@ -271,7 +283,7 @@ public class MessageServiceImpl implements MessageService {
 
         boolean isChannelMember = channelMemberRepository
                 .existsByChannelIdAndUserId(message.getChannel().getId(), userId);
-        if(isChannelMember) {
+        if(!isChannelMember) {
             throw new BadRequestException(ErrorCode.FORBIDDEN, "Only Channel Members can access the chat");
         }
 
