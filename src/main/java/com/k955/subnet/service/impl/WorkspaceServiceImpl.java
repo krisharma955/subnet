@@ -82,8 +82,9 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Override
     @Transactional(readOnly = true)
     public Page<WorkspaceResponse> getUserWorkspaces(String slug, String search, Pageable pageable) {
+        UUID userId = jwtAuthUtil.getCurrentUserId();
         return workspaceRepository
-                .findAll(WorkspaceSpecification.filterBy(slug, search), pageable)
+                .findAll(WorkspaceSpecification.filterBy(userId, slug, search), pageable)
                 .map(workspaceMapper::toWorkspaceResponse);
     }
 
@@ -138,7 +139,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                         ErrorCode.WORKSPACE_NOT_FOUND, "Your Workspace Details can't be loaded at the moment. Try Later!"
                 ));
 
-        workspaceMemberRepository.deleteAll();
+        workspaceMemberRepository.deleteAllByWorkspaceId(workspaceId);
         workspaceRepository.delete(workspace);
     }
 

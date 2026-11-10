@@ -113,6 +113,18 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
                         "This invitation is invalid or no longer available."
                 ));
 
+        UUID userId = jwtAuthUtil.getCurrentUserId();
+        UUID workspaceId = workspaceInvitation.getWorkspace().getId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCode.USER_NOT_FOUND, "Your User Details can't be loaded at the moment. Try Later!"
+                ));
+
+        if(!workspaceInvitation.getEmail().equals(user.getEmail())) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST, "The Invitation was send to a different user.");
+        }
+
         if(workspaceInvitation.getStatus() != WorkspaceInvitationStatus.PENDING) {
             throw new BadRequestException(
                     ErrorCode.INVALID_INVITATION,
@@ -123,14 +135,6 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
         if(workspaceInvitation.getExpiresAt().isBefore(Instant.now())) {
             throw new BadRequestException(ErrorCode.INVITATION_EXPIRED, "This invitation has expired.");
         }
-
-        UUID userId = jwtAuthUtil.getCurrentUserId();
-        UUID workspaceId = workspaceInvitation.getWorkspace().getId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorCode.USER_NOT_FOUND, "Your User Details can't be loaded at the moment. Try Later!"
-                ));
 
         boolean alreadyMember = workspaceMemberRepository.existsByWorkspaceIdAndUserEmail(workspaceId, user.getEmail());
         if(alreadyMember) {
@@ -173,7 +177,7 @@ public class WorkspaceInvitationServiceImpl implements WorkspaceInvitationServic
             );
         }
 
-        if(workspaceInvitation.getExpiresAt().isAfter(Instant.now())) {
+        if(workspaceInvitation.getExpiresAt().isBefore(Instant.now())) {
             throw new BadRequestException(ErrorCode.INVITATION_EXPIRED, "This invitation has expired.");
         }
 
